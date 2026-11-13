@@ -3,10 +3,86 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My First Site</title>
+  <title>Spider-Man Film Timeline</title>
+  <meta name="description" content="An interactive timeline of every Spider-Man film from 2002 to 2026, and the business decisions behind each reboot.">
+  <link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/3.9.3/css/timeline.css">
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --text: #1c1c1c;
+      --muted: #555;
+      --accent: #a01818;
+      --rule: #ddd6cc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+    }
+    header, main, footer { max-width: 60rem; margin: 0 auto; padding: 0 1rem; }
+    header { padding-top: 2.5rem; }
+    h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.15; margin: 0 0 .5rem; }
+    h2 { font-size: 1.3rem; margin: 2.5rem 0 .5rem; border-bottom: 1px solid var(--rule); padding-bottom: .3rem; }
+    .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 1.5rem; }
+    a { color: var(--accent); }
+    #timeline-embed {
+      width: 100%;
+      height: 650px;
+      margin: 1.5rem 0;
+      border: 1px solid var(--rule);
+    }
+    .legend { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
+    .legend li { display: flex; align-items: center; gap: .45rem; }
+    .swatch { width: 1rem; height: 1rem; border-radius: 3px; display: inline-block; }
+    footer { color: var(--muted); font-size: .9rem; padding-bottom: 3rem; margin-top: 3rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+    @media (max-width: 600px) { #timeline-embed { height: 560px; } }
+  </style>
 </head>
 <body>
-  <h1>My First Site</h1>
-  <p>Hello! This site is hosted on GitHub Pages.</p>
+  <header>
+    <h1>Rebooting a Hero: A Timeline of the Spider-Man Films</h1>
+    <p class="lede">Between 2002 and 2026, Spider-Man was rebooted twice in live action and reinvented in animation. This timeline argues that each new version came from a business decision as much as a creative one.</p>
+  </header>
+
+  <main>
+    <div id="timeline-embed" role="region" aria-label="Interactive timeline of the Spider-Man films"></div>
+
+    <h2>How to read this timeline</h2>
+    <p>Click the arrows, or the markers along the bottom, to move between slides. Each slide is colored by film series:</p>
+    <ul class="legend">
+      <li><span class="swatch" style="background:#8B1A1A"></span> Raimi Trilogy (2002–2007)</li>
+      <li><span class="swatch" style="background:#1E3A5F"></span> Amazing Series (2012–2014)</li>
+      <li><span class="swatch" style="background:#4B2A7B"></span> Marvel Cinematic Universe (2017–2026)</li>
+      <li><span class="swatch" style="background:#1A1A2E"></span> Spider-Verse (2018–)</li>
+      <li><span class="swatch" style="background:#3A3A3A"></span> Behind the scenes: deals and decisions</li>
+    </ul>
+    <p>The shaded bands below the markers show how long each lead actor played the role. Tom Holland's and Miles Morales's runs overlap, because the live-action and animated series were made at the same time.</p>
+
+    <h2>The argument</h2>
+    <p>Sony has held the Spider-Man film rights since the late 1990s and must keep making films to keep them. When <em>Spider-Man 4</em> fell apart in 2010, Sony started over with a new cast instead of pausing. When <em>The Amazing Spider-Man 2</em> underperformed, Sony did not try another solo reboot. Instead, it partnered with Marvel Studios in 2015, which is why Tom Holland's Spider-Man shares the screen with the Avengers. In the same period, Sony's animated <em>Spider-Verse</em> films took a different route, with a new lead character and a new visual style. <em>No Way Home</em> (2021) turned these reboots into the story itself, bringing all three live-action Spider-Men together.</p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li>Release dates and worldwide box office: <a href="https://www.boxofficemojo.com/">Box Office Mojo</a> and <a href="https://www.the-numbers.com/">The Numbers</a>. Figures are rounded. The <em>Brand New Day</em> figure is from August 2026 reporting, while the film was still in theaters.</li>
+      <li>Film rights history and studio deals: <a href="https://en.wikipedia.org/wiki/Spider-Man_in_film">"Spider-Man in film," Wikipedia</a>, and the sources it cites.</li>
+      <li>Academy Award wins and nominations: <a href="https://www.oscars.org/oscars/ceremonies">Academy of Motion Picture Arts and Sciences</a>.</li>
+      <li>Trailers: official uploads on YouTube, credited on each slide. Title image: Digital Trends.</li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>Built with <a href="https://timeline.knightlab.com/">TimelineJS</a> from Northwestern University's Knight Lab, for a digital humanities class. The timeline data is in <a href="https://github.com/lukekav48-jpg/my-first-site/blob/main/timeline.json">timeline.json</a>.</p>
+  </footer>
+
+  <script src="https://cdn.knightlab.com/libs/timeline3/3.9.3/js/timeline-min.js"></script>
+  <script>
+    window.timeline = new TL.Timeline('timeline-embed', 'timeline.json', {
+      initial_zoom: 2,
+      hash_bookmark: false
+    });
+  </script>
 </body>
 </html>
