@@ -3,246 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spider-Man Film Timeline</title>
-  <meta name="description" content="An interactive timeline of every Spider-Man film from 2002 to 2026, and the business decisions behind each reboot.">
-  <link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/3.9.3/css/timeline.css">
-  <style>
-    :root {
-      --bg: #faf8f5;
-      --text: #1c1c1c;
-      --muted: #555;
-      --accent: #a01818;
-      --rule: #ddd6cc;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.6;
-    }
-    header, main, footer { max-width: 60rem; margin: 0 auto; padding: 0 1rem; }
-    header { padding-top: 2.5rem; }
-    h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.15; margin: 0 0 .5rem; }
-    h2 { font-size: 1.3rem; margin: 2.5rem 0 .5rem; border-bottom: 1px solid var(--rule); padding-bottom: .3rem; }
-    .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 1.5rem; }
-    a { color: var(--accent); }
-    #timeline-embed {
-      width: 100%;
-      height: 650px;
-      margin: 1.5rem 0;
-      border: 1px solid var(--rule);
-    }
-    .legend { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
-    .legend li { display: flex; align-items: center; gap: .45rem; }
-    .swatch { width: 1rem; height: 1rem; border-radius: 3px; display: inline-block; }
-    footer { color: var(--muted); font-size: .9rem; padding-bottom: 3rem; margin-top: 3rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
-    @media (max-width: 600px) { #timeline-embed { height: 560px; } }
-
-    /* View toggle and list view */
-    .view-toggle {
-      font: inherit; font-size: .95rem;
-      background: var(--accent); color: #fff;
-      border: 0; border-radius: 4px;
-      padding: .5rem 1rem; margin-top: 1rem; cursor: pointer;
-    }
-    .view-toggle:hover { background: #7d1212; }
-    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
-    #timeline-list { list-style: none; padding: 0; margin: 1.5rem 0; }
-    #timeline-list > li {
-      border-left: 6px solid var(--series, #3A3A3A);
-      background: #fff; padding: .75rem 1rem; margin-bottom: .75rem;
-    }
-    #timeline-list h3 { margin: 0 0 .25rem; font-size: 1.1rem; }
-    #timeline-list .meta { color: var(--muted); font-size: .9rem; margin: 0 0 .5rem; }
-    #timeline-list p { margin: .4rem 0; }
-    #timeline-list .series-tag { display: inline-flex; align-items: center; gap: .35rem; }
-
-    /* Follow the Money chart */
-    .money { list-style: none; padding: 0; margin: 1.25rem 0; }
-    .money li { display: grid; grid-template-columns: 13rem 1fr; gap: .25rem 1rem; align-items: center; margin: .35rem 0; }
-    .money .film { font-size: .95rem; line-height: 1.25; }
-    .money .film small { display: block; color: var(--muted); font-size: .8rem; }
-    .money .track { display: flex; align-items: center; gap: .5rem; }
-    .money .bar { height: 1.4rem; border-radius: 0 3px 3px 0; min-width: 2px; }
-    .money .value { font-size: .9rem; white-space: nowrap; }
-    .money li.event {
-      display: block; border-top: 2px dashed var(--accent);
-      color: var(--accent); font-size: .9rem; font-style: italic;
-      padding-top: .2rem; margin: .7rem 0;
-    }
-    .note { color: var(--muted); font-size: .9rem; }
-    @media (max-width: 600px) {
-      .money li { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>Spider-Man Across New York</title>
+  <meta name="description" content="An interactive map that follows Spider-Man's biggest movie fights across New York City, from 2002 to 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400..700&family=Public+Sans:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Rebooting a Hero: A Timeline of the Spider-Man Films</h1>
-    <p class="lede">Between 2002 and 2026, Spider-Man was rebooted twice in live action and reinvented in animation. This timeline argues that each new version came from a business decision as much as a creative one.</p>
+  <a class="skip-link" href="#journey">Skip to the map</a>
+
+  <header class="site-header">
+    <h1>Spider-Man Across New York</h1>
+    <p class="lede">This is a map of every Spider-Man movie from 2002 to 2026. Each pin is where the biggest fight in that movie happens, and you can follow Spider-Man as he goes from one fight to the next. Almost all of them take place in New York, but one of them goes to London and two of them happen in other universes.</p>
   </header>
 
   <main>
-    <button type="button" id="view-toggle" class="view-toggle" aria-pressed="false" aria-controls="timeline-embed timeline-list">View as a list</button>
-    <div id="timeline-embed" role="region" aria-label="Interactive timeline of the Spider-Man films"></div>
-    <ol id="timeline-list" aria-label="Spider-Man films and events, as a list" hidden></ol>
+    <section id="journey" class="journey" aria-label="Map journey">
+      <div class="toolbar">
+        <button type="button" id="btn-back" class="btn" aria-label="Previous stop">← Back</button>
+        <button type="button" id="btn-next" class="btn btn-primary">Start the journey →</button>
+        <p id="counter" class="counter">11 stops</p>
+        <div class="toolbar-spacer"></div>
+        <label class="toggle"><input type="checkbox" id="reduce-motion"> Reduce motion</label>
+        <button type="button" id="btn-restart" class="btn btn-quiet">Start over</button>
+        <button type="button" id="btn-list" class="btn btn-quiet" aria-pressed="false" aria-controls="journey-stage list-view">View as a list</button>
+      </div>
 
-    <h2>How to read this timeline</h2>
-    <p>Click the arrows, or the markers along the bottom, to move between slides. Each slide is colored by film series:</p>
-    <ul class="legend">
-      <li><span class="swatch" style="background:#8B1A1A"></span> Raimi Trilogy (2002–2007)</li>
-      <li><span class="swatch" style="background:#1E3A5F"></span> Amazing Series (2012–2014)</li>
-      <li><span class="swatch" style="background:#4B2A7B"></span> Marvel Cinematic Universe (2017–2026)</li>
-      <li><span class="swatch" style="background:#1A1A2E"></span> Spider-Verse (2018–)</li>
-      <li><span class="swatch" style="background:#3A3A3A"></span> Behind the scenes: deals and decisions</li>
-    </ul>
-    <p>The shaded bands below the markers show how long each lead actor played the role. Tom Holland's and Miles Morales's runs overlap, because the live-action and animated series were made at the same time.</p>
+      <div id="journey-stage" class="stage">
+        <div id="map" class="map" role="region" aria-label="Map of New York City showing the location of each film's main fight"></div>
 
-    <h2>The argument</h2>
-    <p>Sony has held the Spider-Man film rights since the late 1990s and must keep making films to keep them. When <em>Spider-Man 4</em> fell apart in 2010, Sony started over with a new cast instead of pausing. When <em>The Amazing Spider-Man 2</em> underperformed, Sony did not try another solo reboot. Instead, it partnered with Marvel Studios in 2015, which is why Tom Holland's Spider-Man shares the screen with the Avengers. In the same period, Sony's animated <em>Spider-Verse</em> films took a different route, with a new lead character and a new visual style. <em>No Way Home</em> (2021) turned these reboots into the story itself, bringing all three live-action Spider-Men together.</p>
+        <div id="london" class="london" hidden>
+          <p class="london-title">Meanwhile, in London…</p>
+          <div id="london-map" class="london-map" role="img" aria-label="Small map of London showing Tower Bridge"></div>
+        </div>
 
-    <h2>Follow the money</h2>
-    <p>Worldwide box office for each film, in release order. The dashed lines mark the business decisions that came between them. Sony's most profitable Spider-Man films all came after it began sharing the character with Marvel Studios in 2015.</p>
-    <ul class="money" id="money-chart" aria-label="Worldwide box office for each Spider-Man film, with business decisions marked"></ul>
-    <p class="note">Rounded worldwide totals in US dollars, not adjusted for inflation. <em>Brand New Day</em> was still in theaters when its figure was reported.</p>
+        <div id="clip-pop" class="clip-pop" role="region" aria-labelledby="clip-title" hidden>
+          <div class="clip-bar">
+            <p class="clip-title"><span class="clip-label">The fight</span> <span id="clip-title"></span></p>
+            <button type="button" id="clip-close" class="clip-x" aria-label="Close the fight clip">✕</button>
+          </div>
+          <iframe id="clip-frame" src="about:blank" title="Fight clip" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </div>
 
-    <h2>About this project</h2>
-    <h3>Aims</h3>
-    <p>I wanted to show that the Spider-Man films are not just a series of sequels. Each reboot can be traced to a business decision: who held the film rights, how a film performed, and which studio Sony partnered with. The timeline puts those decisions on the same line as the films, so you can see the cause and the effect together.</p>
-    <h3>Tool</h3>
-    <p>I built the timeline with <a href="https://timeline.knightlab.com/">TimelineJS</a>, a free tool from Northwestern University's Knight Lab that is used by newsrooms and historians. I chose it because it is designed for telling a story in order, it can show trailers and images on each slide, and every slide lives in one data file (<code>timeline.json</code>). The list view and the box office chart on this page are built from plain HTML, CSS, and JavaScript, and the site is hosted for free on GitHub Pages.</p>
-    <h3>Design</h3>
-    <p>Each film series has its own color, so you can tell at a glance which era a slide belongs to, and grey slides mark the deals behind the scenes. The shaded bands along the bottom show each actor's run. I used a serif font and a warm off-white background to give the page the feel of a printed film history, and a single red accent color for links and highlights.</p>
-    <h3>Accessibility</h3>
-    <p>Interactive timelines can be hard to use without a mouse or with a screen reader, so the "View as a list" button shows every slide as plain, readable text that works with a keyboard and screen readers. Every image has alt text, the series legend uses written labels and not just color, the chart labels every bar with its film, series, and dollar amount, and the page fits on a phone screen. Next, I would add captions to the embedded trailers and give each series a symbol in addition to its color for color-blind readers.</p>
+        <article id="card" class="card" tabindex="-1" aria-labelledby="card-title">
+          <!-- Filled in by app.js -->
+        </article>
+      </div>
 
-    <h2>Sources</h2>
-    <ul>
-      <li>Release dates and worldwide box office: <a href="https://www.boxofficemojo.com/">Box Office Mojo</a> and <a href="https://www.the-numbers.com/">The Numbers</a>. Figures are rounded. The <em>Brand New Day</em> figure is from August 2026 reporting, while the film was still in theaters.</li>
-      <li>Film rights history and studio deals: <a href="https://en.wikipedia.org/wiki/Spider-Man_in_film">"Spider-Man in film," Wikipedia</a>, and the sources it cites.</li>
-      <li>Academy Award wins and nominations: <a href="https://www.oscars.org/oscars/ceremonies">Academy of Motion Picture Arts and Sciences</a>.</li>
-      <li>Trailers: official uploads on YouTube, credited on each slide. Title image: Digital Trends.</li>
-    </ul>
+      <ul id="legend" class="legend" aria-label="Map key"></ul>
+      <p class="hint">You can use the <kbd>←</kbd> and <kbd>→</kbd> arrow keys, the buttons, or click on any of the numbered pins to move around. If a pin has a dashed outline, it means I'm not sure exactly where the fight happens or the place isn't real, so that pin is my best guess.</p>
+
+      <p id="status" class="visually-hidden" aria-live="polite"></p>
+    </section>
+
+    <section id="list-view" class="list-view" hidden aria-labelledby="list-title">
+      <h2 id="list-title">All eleven stops</h2>
+      <ol id="stop-list" class="stop-list"></ol>
+    </section>
+
+    <section class="about" aria-labelledby="about-title">
+      <h2 id="about-title">About this project</h2>
+
+      <p>When I started this project it was a regular timeline of the Spider-Man movies. While I was putting it together I noticed that almost every big fight happens somewhere you could actually find in New York, like the Queensboro Bridge, Times Square, and the Statue of Liberty. Most Spider-Man timelines are just a list of release dates, so I wanted to show the movies as places instead. Each stop on the map is where the main fight of a movie happens, so going through the whole map takes you through every Spider-Man movie from 2002 to 2026. It also shows how the same city keeps getting used over and over again across four different actors and four different film series.</p>
+
+      <p>My first version of this project was built with TimelineJS. It worked, but a timeline can only show when something happened and not where it happened, so I decided to switch to a map. The map is made with <a href="https://leafletjs.com/">Leaflet</a>, which is a free tool for making interactive maps, and the background is Esri's dark gray map, which uses data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. All of the information for each stop is saved in one file called <code>stops.json</code>, so if I want to change something I only have to edit that one file. The site is hosted for free on GitHub Pages. I don't really have any coding knowledge, so I used AI to help me write the code and turn my ideas into something that actually works.</p>
+
+      <p>For the design I went with a dark map so that the pins and the webs would stand out. Each film series has its own color, and every pin has a number on it so you don't have to rely on the colors to know what order the movies go in. Instead of drawing a line between the stops, Spider-Man leaves little web logos behind him, kind of like footprints, that point toward the next stop. When he lands, a clip of the fight pops up right next to the pin and starts playing, while all of the info about the movie stays on the side. Far From Home is the only movie where the fight leaves New York, so I gave London its own small map in the corner. The two Spider-Verse movies have a glowing ring around their pins since they take place in other universes.</p>
+
+      <p>I also wanted to make sure anyone could use the map. You can get around with just a keyboard by using the arrow keys, and every button and pin can be reached with the Tab key. If someone is using a screen reader, it reads out the movie and the place every time the stop changes. The "View as a list" button shows all eleven stops as plain text, and the "Reduce motion" box turns off the animations and stops the clips from playing by themselves. That box turns on by itself if your device is already set to reduce motion. You can close a clip with the X or the Escape key, and the site works on phones too.</p>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">Sources</h2>
+      <ul>
+        <li>I got the plot and fight details from each movie's Wikipedia page. Brand New Day just came out, so for that one I used <a href="https://variety.com/2026/artisans/news/spider-man-brand-new-day-fight-scene-jean-grey-phoenix-1236830062/">Variety</a> and <a href="https://www.superherohype.com/news/682593-spider-man-brand-new-day-ending-explained-hulk-jean">SuperHeroHype</a>.</li>
+        <li>The filming locations came from <a href="https://mculocationscout.com/2004/06/30/train-fight-new-york-mcu-location-scout/">MCU Location Scout</a> for the Spider-Man 2 train fight and Pier 56, and from <a href="https://movie-locations.com/movies/s/Spider-Man-3.php">The Worldwide Guide to Movie Locations</a> for Spider-Man 3.</li>
+        <li>The box office numbers are from <a href="https://www.boxofficemojo.com/">Box Office Mojo</a> and <a href="https://www.the-numbers.com/">The Numbers</a>, and I rounded them.</li>
+        <li>The fight clips are embedded from YouTube, and each stop says which channel the clip came from. All of the movie footage belongs to Sony Pictures and Marvel Studios.</li>
+        <li>The map tiles are from <a href="https://www.esri.com/">Esri</a>, with data from Esri, HERE, Garmin, and <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</li>
+      </ul>
+    </section>
   </main>
 
-  <footer>
-    <p>Built with <a href="https://timeline.knightlab.com/">TimelineJS</a> from Northwestern University's Knight Lab, for a digital humanities class. The timeline data is in <a href="https://github.com/lukekav48-jpg/my-first-site/blob/main/timeline.json">timeline.json</a>.</p>
+  <footer class="site-footer">
+    <p>I made this for my digital humanities class using <a href="https://leafletjs.com/">Leaflet</a>. All of the info for each stop is in <a href="https://github.com/lukekav48-jpg/spider-man-timeline/blob/main/stops.json">stops.json</a>.</p>
   </footer>
 
-  <script src="https://cdn.knightlab.com/libs/timeline3/3.9.3/js/timeline-min.js"></script>
-  <script>
-    window.timeline = new TL.Timeline('timeline-embed', 'timeline.json', {
-      initial_zoom: 2,
-      hash_bookmark: false
-    });
-
-    // ---- List view: the same slides as plain, accessible text ----
-    const SERIES_NAMES = {
-      'Raimi Trilogy': 'Raimi Trilogy',
-      'Amazing Series': 'Amazing Series',
-      'MCU': 'Marvel Cinematic Universe',
-      'Spider-Verse': 'Spider-Verse',
-      'Behind the Scenes': 'Behind the scenes'
-    };
-    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-    function formatDate(d) {
-      if (!d) return '';
-      if (d.month && d.day) return MONTHS[d.month - 1] + ' ' + d.day + ', ' + d.year;
-      if (d.month) return MONTHS[d.month - 1] + ' ' + d.year;
-      return String(d.year);
-    }
-
-    function buildList(data) {
-      const list = document.getElementById('timeline-list');
-      list.innerHTML = '';
-      data.events.forEach(function (e) {
-        const li = document.createElement('li');
-        const color = (e.background && e.background.color) || '#3A3A3A';
-        li.style.setProperty('--series', color);
-
-        const h = document.createElement('h3');
-        h.innerHTML = e.text.headline;
-        const meta = document.createElement('p');
-        meta.className = 'meta';
-        meta.innerHTML = '<time>' + formatDate(e.start_date) + '</time> · ' +
-          '<span class="series-tag"><span class="swatch" style="background:' + color + '"></span>' +
-          (SERIES_NAMES[e.group] || e.group) + '</span>';
-        const body = document.createElement('div');
-        body.innerHTML = e.text.text || '';  // our own data file, written by hand
-
-        li.append(h, meta, body);
-        if (e.media && e.media.url && e.media.url.indexOf('youtube.com') !== -1) {
-          const p = document.createElement('p');
-          p.innerHTML = '<a href="' + e.media.url + '">Watch the trailer on YouTube</a>';
-          li.append(p);
-        }
-        list.append(li);
-      });
-    }
-
-    fetch('timeline.json')
-      .then(function (r) { return r.json(); })
-      .then(buildList)
-      .catch(function () {
-        document.getElementById('view-toggle').hidden = true;
-      });
-
-    const toggle = document.getElementById('view-toggle');
-    toggle.addEventListener('click', function () {
-      const showList = toggle.getAttribute('aria-pressed') !== 'true';
-      toggle.setAttribute('aria-pressed', String(showList));
-      toggle.textContent = showList ? 'View as an interactive timeline' : 'View as a list';
-      document.getElementById('timeline-list').hidden = !showList;
-      document.getElementById('timeline-embed').hidden = showList;
-      if (!showList && window.timeline && window.timeline.updateDisplay) {
-        window.timeline.updateDisplay();  // TimelineJS needs a redraw after being hidden
-      }
-    });
-
-    // ---- Follow the money: worldwide box office, in millions of US dollars ----
-    // Figures match the timeline slides (Box Office Mojo / The Numbers, rounded).
-    const MONEY = [
-      { film: 'Spider-Man', year: 2002, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 822 },
-      { film: 'Spider-Man 2', year: 2004, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 790 },
-      { film: 'Spider-Man 3', year: 2007, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 895 },
-      { event: '2010: Spider-Man 4 is canceled, and Sony reboots' },
-      { film: 'The Amazing Spider-Man', year: 2012, series: 'Amazing Series', color: '#1E3A5F', gross: 758 },
-      { film: 'The Amazing Spider-Man 2', year: 2014, series: 'Amazing Series', color: '#1E3A5F', gross: 709 },
-      { event: '2015: Sony and Marvel Studios agree to share Spider-Man' },
-      { film: 'Spider-Man: Homecoming', year: 2017, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 880 },
-      { film: 'Into the Spider-Verse', year: 2018, series: 'Spider-Verse', color: '#1A1A2E', gross: 394 },
-      { film: 'Spider-Man: Far From Home', year: 2019, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 1132 },
-      { event: '2019: Sony and Disney renew the deal' },
-      { film: 'Spider-Man: No Way Home', year: 2021, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 1922 },
-      { film: 'Across the Spider-Verse', year: 2023, series: 'Spider-Verse', color: '#1A1A2E', gross: 690 },
-      { film: 'Spider-Man: Brand New Day', year: 2026, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 2000, note: 'still in theaters' }
-    ];
-
-    function formatMoney(m) {
-      return m >= 1000 ? '$' + (m / 1000).toFixed(m % 1000 === 0 ? 0 : 1) + ' billion' : '$' + m + ' million';
-    }
-
-    (function buildMoneyChart() {
-      const chart = document.getElementById('money-chart');
-      const max = Math.max.apply(null, MONEY.filter(function (r) { return r.gross; }).map(function (r) { return r.gross; }));
-      MONEY.forEach(function (r) {
-        const li = document.createElement('li');
-        if (r.event) {
-          li.className = 'event';
-          li.textContent = r.event;
-        } else {
-          const label = formatMoney(r.gross) + (r.note ? ' (' + r.note + ')' : '');
-          li.innerHTML =
-            '<span class="film">' + r.film + ' (' + r.year + ')<small>' + r.series + '</small></span>' +
-            '<span class="track"><span class="bar" style="width:' + (r.gross / max * 80).toFixed(1) + '%;background:' + r.color + '"></span>' +
-            '<span class="value">' + label + '</span></span>';
-        }
-        chart.append(li);
-      });
-    })();
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
