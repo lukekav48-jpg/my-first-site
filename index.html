@@ -39,6 +39,43 @@
     .swatch { width: 1rem; height: 1rem; border-radius: 3px; display: inline-block; }
     footer { color: var(--muted); font-size: .9rem; padding-bottom: 3rem; margin-top: 3rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
     @media (max-width: 600px) { #timeline-embed { height: 560px; } }
+
+    /* View toggle and list view */
+    .view-toggle {
+      font: inherit; font-size: .95rem;
+      background: var(--accent); color: #fff;
+      border: 0; border-radius: 4px;
+      padding: .5rem 1rem; margin-top: 1rem; cursor: pointer;
+    }
+    .view-toggle:hover { background: #7d1212; }
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+    #timeline-list { list-style: none; padding: 0; margin: 1.5rem 0; }
+    #timeline-list > li {
+      border-left: 6px solid var(--series, #3A3A3A);
+      background: #fff; padding: .75rem 1rem; margin-bottom: .75rem;
+    }
+    #timeline-list h3 { margin: 0 0 .25rem; font-size: 1.1rem; }
+    #timeline-list .meta { color: var(--muted); font-size: .9rem; margin: 0 0 .5rem; }
+    #timeline-list p { margin: .4rem 0; }
+    #timeline-list .series-tag { display: inline-flex; align-items: center; gap: .35rem; }
+
+    /* Follow the Money chart */
+    .money { list-style: none; padding: 0; margin: 1.25rem 0; }
+    .money li { display: grid; grid-template-columns: 13rem 1fr; gap: .25rem 1rem; align-items: center; margin: .35rem 0; }
+    .money .film { font-size: .95rem; line-height: 1.25; }
+    .money .film small { display: block; color: var(--muted); font-size: .8rem; }
+    .money .track { display: flex; align-items: center; gap: .5rem; }
+    .money .bar { height: 1.4rem; border-radius: 0 3px 3px 0; min-width: 2px; }
+    .money .value { font-size: .9rem; white-space: nowrap; }
+    .money li.event {
+      display: block; border-top: 2px dashed var(--accent);
+      color: var(--accent); font-size: .9rem; font-style: italic;
+      padding-top: .2rem; margin: .7rem 0;
+    }
+    .note { color: var(--muted); font-size: .9rem; }
+    @media (max-width: 600px) {
+      .money li { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -48,7 +85,9 @@
   </header>
 
   <main>
+    <button type="button" id="view-toggle" class="view-toggle" aria-pressed="false" aria-controls="timeline-embed timeline-list">View as a list</button>
     <div id="timeline-embed" role="region" aria-label="Interactive timeline of the Spider-Man films"></div>
+    <ol id="timeline-list" aria-label="Spider-Man films and events, as a list" hidden></ol>
 
     <h2>How to read this timeline</h2>
     <p>Click the arrows, or the markers along the bottom, to move between slides. Each slide is colored by film series:</p>
@@ -63,6 +102,21 @@
 
     <h2>The argument</h2>
     <p>Sony has held the Spider-Man film rights since the late 1990s and must keep making films to keep them. When <em>Spider-Man 4</em> fell apart in 2010, Sony started over with a new cast instead of pausing. When <em>The Amazing Spider-Man 2</em> underperformed, Sony did not try another solo reboot. Instead, it partnered with Marvel Studios in 2015, which is why Tom Holland's Spider-Man shares the screen with the Avengers. In the same period, Sony's animated <em>Spider-Verse</em> films took a different route, with a new lead character and a new visual style. <em>No Way Home</em> (2021) turned these reboots into the story itself, bringing all three live-action Spider-Men together.</p>
+
+    <h2>Follow the money</h2>
+    <p>Worldwide box office for each film, in release order. The dashed lines mark the business decisions that came between them. Sony's most profitable Spider-Man films all came after it began sharing the character with Marvel Studios in 2015.</p>
+    <ul class="money" id="money-chart" aria-label="Worldwide box office for each Spider-Man film, with business decisions marked"></ul>
+    <p class="note">Rounded worldwide totals in US dollars, not adjusted for inflation. <em>Brand New Day</em> was still in theaters when its figure was reported.</p>
+
+    <h2>About this project</h2>
+    <h3>Aims</h3>
+    <p>I wanted to show that the Spider-Man films are not just a series of sequels. Each reboot can be traced to a business decision: who held the film rights, how a film performed, and which studio Sony partnered with. The timeline puts those decisions on the same line as the films, so you can see the cause and the effect together.</p>
+    <h3>Tool</h3>
+    <p>I built the timeline with <a href="https://timeline.knightlab.com/">TimelineJS</a>, a free tool from Northwestern University's Knight Lab that is used by newsrooms and historians. I chose it because it is designed for telling a story in order, it can show trailers and images on each slide, and every slide lives in one data file (<code>timeline.json</code>). The list view and the box office chart on this page are built from plain HTML, CSS, and JavaScript, and the site is hosted for free on GitHub Pages.</p>
+    <h3>Design</h3>
+    <p>Each film series has its own color, so you can tell at a glance which era a slide belongs to, and grey slides mark the deals behind the scenes. The shaded bands along the bottom show each actor's run. I used a serif font and a warm off-white background to give the page the feel of a printed film history, and a single red accent color for links and highlights.</p>
+    <h3>Accessibility</h3>
+    <p>Interactive timelines can be hard to use without a mouse or with a screen reader, so the "View as a list" button shows every slide as plain, readable text that works with a keyboard and screen readers. Every image has alt text, the series legend uses written labels and not just color, the chart labels every bar with its film, series, and dollar amount, and the page fits on a phone screen. Next, I would add captions to the embedded trailers and give each series a symbol in addition to its color for color-blind readers.</p>
 
     <h2>Sources</h2>
     <ul>
@@ -83,6 +137,112 @@
       initial_zoom: 2,
       hash_bookmark: false
     });
+
+    // ---- List view: the same slides as plain, accessible text ----
+    const SERIES_NAMES = {
+      'Raimi Trilogy': 'Raimi Trilogy',
+      'Amazing Series': 'Amazing Series',
+      'MCU': 'Marvel Cinematic Universe',
+      'Spider-Verse': 'Spider-Verse',
+      'Behind the Scenes': 'Behind the scenes'
+    };
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function formatDate(d) {
+      if (!d) return '';
+      if (d.month && d.day) return MONTHS[d.month - 1] + ' ' + d.day + ', ' + d.year;
+      if (d.month) return MONTHS[d.month - 1] + ' ' + d.year;
+      return String(d.year);
+    }
+
+    function buildList(data) {
+      const list = document.getElementById('timeline-list');
+      list.innerHTML = '';
+      data.events.forEach(function (e) {
+        const li = document.createElement('li');
+        const color = (e.background && e.background.color) || '#3A3A3A';
+        li.style.setProperty('--series', color);
+
+        const h = document.createElement('h3');
+        h.innerHTML = e.text.headline;
+        const meta = document.createElement('p');
+        meta.className = 'meta';
+        meta.innerHTML = '<time>' + formatDate(e.start_date) + '</time> · ' +
+          '<span class="series-tag"><span class="swatch" style="background:' + color + '"></span>' +
+          (SERIES_NAMES[e.group] || e.group) + '</span>';
+        const body = document.createElement('div');
+        body.innerHTML = e.text.text || '';  // our own data file, written by hand
+
+        li.append(h, meta, body);
+        if (e.media && e.media.url && e.media.url.indexOf('youtube.com') !== -1) {
+          const p = document.createElement('p');
+          p.innerHTML = '<a href="' + e.media.url + '">Watch the trailer on YouTube</a>';
+          li.append(p);
+        }
+        list.append(li);
+      });
+    }
+
+    fetch('timeline.json')
+      .then(function (r) { return r.json(); })
+      .then(buildList)
+      .catch(function () {
+        document.getElementById('view-toggle').hidden = true;
+      });
+
+    const toggle = document.getElementById('view-toggle');
+    toggle.addEventListener('click', function () {
+      const showList = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(showList));
+      toggle.textContent = showList ? 'View as an interactive timeline' : 'View as a list';
+      document.getElementById('timeline-list').hidden = !showList;
+      document.getElementById('timeline-embed').hidden = showList;
+      if (!showList && window.timeline && window.timeline.updateDisplay) {
+        window.timeline.updateDisplay();  // TimelineJS needs a redraw after being hidden
+      }
+    });
+
+    // ---- Follow the money: worldwide box office, in millions of US dollars ----
+    // Figures match the timeline slides (Box Office Mojo / The Numbers, rounded).
+    const MONEY = [
+      { film: 'Spider-Man', year: 2002, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 822 },
+      { film: 'Spider-Man 2', year: 2004, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 790 },
+      { film: 'Spider-Man 3', year: 2007, series: 'Raimi Trilogy', color: '#8B1A1A', gross: 895 },
+      { event: '2010: Spider-Man 4 is canceled, and Sony reboots' },
+      { film: 'The Amazing Spider-Man', year: 2012, series: 'Amazing Series', color: '#1E3A5F', gross: 758 },
+      { film: 'The Amazing Spider-Man 2', year: 2014, series: 'Amazing Series', color: '#1E3A5F', gross: 709 },
+      { event: '2015: Sony and Marvel Studios agree to share Spider-Man' },
+      { film: 'Spider-Man: Homecoming', year: 2017, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 880 },
+      { film: 'Into the Spider-Verse', year: 2018, series: 'Spider-Verse', color: '#1A1A2E', gross: 394 },
+      { film: 'Spider-Man: Far From Home', year: 2019, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 1132 },
+      { event: '2019: Sony and Disney renew the deal' },
+      { film: 'Spider-Man: No Way Home', year: 2021, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 1922 },
+      { film: 'Across the Spider-Verse', year: 2023, series: 'Spider-Verse', color: '#1A1A2E', gross: 690 },
+      { film: 'Spider-Man: Brand New Day', year: 2026, series: 'Marvel Cinematic Universe', color: '#4B2A7B', gross: 2000, note: 'still in theaters' }
+    ];
+
+    function formatMoney(m) {
+      return m >= 1000 ? '$' + (m / 1000).toFixed(m % 1000 === 0 ? 0 : 1) + ' billion' : '$' + m + ' million';
+    }
+
+    (function buildMoneyChart() {
+      const chart = document.getElementById('money-chart');
+      const max = Math.max.apply(null, MONEY.filter(function (r) { return r.gross; }).map(function (r) { return r.gross; }));
+      MONEY.forEach(function (r) {
+        const li = document.createElement('li');
+        if (r.event) {
+          li.className = 'event';
+          li.textContent = r.event;
+        } else {
+          const label = formatMoney(r.gross) + (r.note ? ' (' + r.note + ')' : '');
+          li.innerHTML =
+            '<span class="film">' + r.film + ' (' + r.year + ')<small>' + r.series + '</small></span>' +
+            '<span class="track"><span class="bar" style="width:' + (r.gross / max * 80).toFixed(1) + '%;background:' + r.color + '"></span>' +
+            '<span class="value">' + label + '</span></span>';
+        }
+        chart.append(li);
+      });
+    })();
   </script>
 </body>
 </html>
